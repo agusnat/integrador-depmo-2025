@@ -54,7 +54,7 @@ const Styles = StyleSheet.create({
   },
   contenedorCamara: {
         flex: 1,
-    },
+  },
     camara: {
         flex: 1,
     },
@@ -97,7 +97,82 @@ const Styles = StyleSheet.create({
       backgroundColor: 'rgba(0,0,0,.1)',
       marginTop: 4,
       textAlign: 'center'
-    }
+    },
+    coordsContainer: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 12,
+        marginBottom: 30,
+        minWidth: '90%',
+        alignItems: 'center',
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+    },
+    coordsTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 15,
+        color: '#495057',
+    },
+    coordText: {
+        fontSize: 16,
+        marginBottom: 8,
+        color: '#6c757d',
+        fontFamily: 'monospace',
+    },
+    statusText: {
+        fontSize: 14,
+        color: '#28a745',
+        fontWeight: '500',
+        marginTop: 10,
+    },
+    noLocationText: {
+        fontSize: 16,
+        color: '#6c757d',
+        fontStyle: 'italic',
+        textAlign: 'center',
+    },
+    buttonsContainer: {
+        width: '90%',
+        gap: 12,
+    },
+    startButton: {
+        backgroundColor: '#28a745',
+    },
+    stopButton: {
+        backgroundColor: '#dc3545',
+    },
+    clearButton: {
+        backgroundColor: '#6c757d',
+    },
+    instructions: {
+        marginTop: 30,
+        backgroundColor: '#e9ecef',
+        padding: 15,
+        borderRadius: 8,
+        width: '90%',
+    },
+    instructionTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        color: '#495057',
+    },
+    instructionText: {
+        fontSize: 14,
+        color: '#6c757d',
+        marginBottom: 5,
+    },
+    map: {
+        width: '100%',
+        height: 350,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#dee2e6',
+    },
 });
 
 export default Styles;
