@@ -1,5 +1,5 @@
 // Pantallas/PantallaPerfil.js
-import { View, Text, Pressable, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Pressable, TextInput, TouchableOpacity, Alert, ActivityIndicator, Image } from 'react-native';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { useState, useEffect, useRef } from 'react';
@@ -9,8 +9,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { File, Directory, Paths } from 'expo-file-system';
 
 export default function PantallaPerfil({ navigation}) {
-    const [nombre, setNombre] = useState('');
-    const [apellido, setApellido] = useState('');
+    const [datos, setDatos] = useState(null);
     const [showCamera, setShowCamera] = useState(false);
     const [permission, requestPermission] = useCameraPermissions();
     const cameraRef = useRef(null);
@@ -29,8 +28,7 @@ export default function PantallaPerfil({ navigation}) {
 
         if (docSnap.exists()) {
             const datos = docSnap.data();
-            setNombre(datos.nombre);
-            setApellido(datos.apellido);
+            setDatos(datos);
         } else {
             console.log('No se encontró el documento');
         }
@@ -40,10 +38,7 @@ export default function PantallaPerfil({ navigation}) {
         const uid = await SecureStore.getItemAsync('userToken');
 
         try {
-            await setDoc(doc(db, "usuarios", uid), {
-                    nombre,
-                    apellido
-            });
+            await setDoc(doc(db, "usuarios", uid), datos);
 
             Alert.alert("Mis datos", "Datos guardados");
         } catch (error) {
@@ -53,43 +48,36 @@ export default function PantallaPerfil({ navigation}) {
     };
 
     const tomarYGuardarFoto = async () => {
-        if (cameraRef.current) {
-            try {
-                // 1. Tomar la foto
-                const foto = await cameraRef.current.takePictureAsync();
-                console.log('Foto tomada:', foto.uri);
+        if (!cameraRef.current) return;
 
+        try {
+            const foto = await cameraRef.current.takePictureAsync();
+            console.log('Foto tomada:', foto.uri);
 
-                // 2. Crear directorio para guardar fotos
-                const directorioFotos = new Directory(Paths.document, 'mis_fotos');
-                directorioFotos.create({ idempotent: true });
+            const dir = new Directory(Paths.document, 'mis_fotos');
+            await dir.create({ idempotent: true });
 
+            const nombreArchivo = `foto_${Date.now()}.jpg`;
+            const archivoDestino = new File(dir, nombreArchivo);
 
-                // 3. Crear nombre único para la foto
-                const nombreArchivo = `foto_${Date.now()}.jpg`;
+            const archivoOrigen = new File(foto.uri);
+            await archivoOrigen.copy(archivoDestino);
 
+            setDatos(prev => ({ ...prev, fotoUri: archivoDestino.uri }));
 
-                // 4. Crear archivo de destino
-                const archivoDestino = new File(directorioFotos, nombreArchivo);
-
-
-                // 5. Copiar foto temporal al archivo permanente
-                const fotoTemporal = new File(foto.uri);
-                fotoTemporal.copy(archivoDestino);
-
-
-                // 6. Confirmar éxito
-                Alert.alert('¡Éxito!', `Foto guardada como: ${nombreArchivo}`);
-                setShowCamera(false);
-
-
-            } catch (error) {
-                console.error('Error:', error);
-                Alert.alert('Error', 'No se pudo guardar la foto');
-            }
+            setShowCamera(false);
+            Alert.alert('✅ Éxito', `Foto guardada`);
+        } catch (error) {
+            console.error('Error:', error);
+            Alert.alert('❌ Error', 'No se pudo guardar la foto');
         }
     };
 
+    if (!datos) return (<>
+        <View style={Styles.container}>
+            <ActivityIndicator size="large" />
+        </View>
+    </>);
 
     if (!permission?.granted) {
         return (
@@ -127,14 +115,25 @@ export default function PantallaPerfil({ navigation}) {
     return (
         <View style={Styles.container}>
             <Text style={Styles.title}>Mis datos</Text>
+            <Text style={Styles.label}>Foto de perfil:</Text>
+            {datos?.fotoUri ? (
+                <Image
+                    source={{ uri: datos.fotoUri }}  
+                    style={{ width: 200, height: 200, borderRadius: 12, marginTop: 12 }}
+                />
+            ) : (
+                <Text style={Styles.tinyText}>Todavía no hay foto</Text>
+            )}
             <TouchableOpacity
                 style={Styles.button}
                 onPress={() => setShowCamera(true)}
             >
-            <Text style={Styles.buttonText}>📷 Tomar Foto</Text>
+            <Text style={Styles.buttonText}>Subir foto</Text>
             </TouchableOpacity>
-            <TextInput styles={Styles.input} placeholder={nombre} onChangeText={setNombre}/>
-            <TextInput styles={Styles.input} placeholder={apellido} onChangeText={setApellido} />
+            <Text style={Styles.label}>Nombre:</Text>
+            <TextInput style={Styles.input} placeholder={datos.nombre} onChangeText={(text) => setDatos({ ...datos, nombre: text })}/>
+            <Text style={Styles.label}>Apellido:</Text>
+            <TextInput style={Styles.input} placeholder={datos.apellido} onChangeText={(text) => setDatos({ ...datos, apellido: text })}/>
             <Pressable style={Styles.button} onPress={guardar}>
                 <Text style={Styles.buttonText}>Guardar</Text>
             </Pressable>
