@@ -1,22 +1,26 @@
 // Pantallas/PantallaInicio.js
-import { View, Text, Button, TextInput } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, Text, Pressable } from 'react-native';
 import { useAuth } from '../auth/useAuth';
-
+import Styles from '../assets/Styles';
+import * as SecureStore from 'expo-secure-store';
 
 export default function PantallaInicio({ navigation }) {
     const { setIsAuthenticated } = useAuth();
 
     const cerrarSesion = async()=>{
-        await AsyncStorage.removeItem("uid");
+        await SecureStore.deleteItemAsync('userToken');
         await setIsAuthenticated(false);
     }
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Bienvenido a la pantalla de inicio</Text>
-            <Button title="Ir a Perfil" onPress={() => navigation.navigate('Perfil')} />
-            <Button title="Cerrar sesion" onPress={() => cerrarSesion()} />
+        <View style={Styles.container}>
+            <Text style={Styles.title}>Bienvenido</Text>
+            <Pressable style={Styles.button} onPress={() => navigation.navigate('Perfil')}>
+                <Text style={Styles.buttonText}>Mis datos</Text>
+            </Pressable>
+            <Pressable style={Styles.button} onPress={() => cerrarSesion()}>
+                <Text style={Styles.buttonText}>Cerrar sesión</Text>
+            </Pressable>
         </View>
     );
 }

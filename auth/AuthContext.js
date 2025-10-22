@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
         const checkToken = async () => {
             try {
                 const token = await SecureStore.getItemAsync('userToken');
+
                 setIsAuthenticated(!!token);
             } catch (error) {
                 setIsAuthenticated(false);
