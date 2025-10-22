@@ -1,4 +1,4 @@
-#📱 App Expo + Firebase Auth — README
+# 📱 App Expo + Firebase Auth — README
 
 Una app móvil hecha en Expo (React Native) con Firebase que permite:
 
@@ -14,15 +14,15 @@ Ajustes de perfil: modificar nombre y apellido y subir foto de perfil desde el c
 
 Persistencia de datos de perfil en Firestore y foto en Firebase Storage.
 
-##✨ Características
+## ✨ Características
 
-###🔒 Autenticación segura con firebase/auth (Email/Password).
+### 🔒 Autenticación segura con firebase/auth (Email/Password).
 
-###👤 Perfiles de usuario: users/{uid} en Firestore.
+### 👤 Perfiles de usuario: users/{uid} en Firestore.
 
-###🖼️ Subida de imagen de perfil con expo-camera → Storage.
+### 🖼️ Subida de imagen de perfil con expo-camera → Storage.
 
-###🧰 Tecnologías:
+### 🧰 Tecnologías:
 
 Expo
  (React Native)
@@ -35,7 +35,7 @@ Firebase Storage
 
 expo-camera para imágenes 
 
-###Plantilla .env:
+### Plantilla .env:
 
 ```
 FIREBASE_API_KEY=
