@@ -9,6 +9,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { File, Directory, Paths } from 'expo-file-system';
 
 export default function PantallaPerfil({ navigation}) {
+    const [fotoUri, setFotoUri] = useState(null);
     const [datos, setDatos] = useState(null);
     const [showCamera, setShowCamera] = useState(false);
     const [permission, requestPermission] = useCameraPermissions();
@@ -58,18 +59,19 @@ export default function PantallaPerfil({ navigation}) {
             await dir.create({ idempotent: true });
 
             const nombreArchivo = `foto_${Date.now()}.jpg`;
+
             const archivoDestino = new File(dir, nombreArchivo);
 
             const archivoOrigen = new File(foto.uri);
             await archivoOrigen.copy(archivoDestino);
 
-            setDatos(prev => ({ ...prev, fotoUri: archivoDestino.uri }));
-
+            setFotoUri(archivoDestino.uri);
             setShowCamera(false);
-            Alert.alert('✅ Éxito', `Foto guardada`);
+
+            Alert.alert('Éxito', `Foto guardada`);
         } catch (error) {
-            console.error('Error:', error);
-            Alert.alert('❌ Error', 'No se pudo guardar la foto');
+            console.error(error);
+            Alert.alert('Error', 'No se pudo guardar la foto');
         }
     };
 
@@ -93,7 +95,7 @@ export default function PantallaPerfil({ navigation}) {
     if (showCamera) {
         return (
             <View style={Styles.contenedorCamara}>
-                <CameraView style={Styles.camara} ref={cameraRef} />
+                <CameraView style={Styles.camara} ref={cameraRef} facing='front' />
                 <View style={Styles.controles}>
                     <TouchableOpacity
                         style={Styles.botonCerrar}
@@ -116,13 +118,13 @@ export default function PantallaPerfil({ navigation}) {
         <View style={Styles.container}>
             <Text style={Styles.title}>Mis datos</Text>
             <Text style={Styles.label}>Foto de perfil:</Text>
-            {datos?.fotoUri ? (
+            {fotoUri ? (
                 <Image
-                    source={{ uri: datos.fotoUri }}  
+                    source={{ uri: fotoUri }}  
                     style={{ width: 200, height: 200, borderRadius: 12, marginTop: 12 }}
                 />
             ) : (
-                <Text style={Styles.tinyText}>Todavía no hay foto</Text>
+                <Text style={Styles.imagePlaceholder}>Todavía no hay foto</Text>
             )}
             <TouchableOpacity
                 style={Styles.button}

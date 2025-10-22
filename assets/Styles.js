@@ -90,7 +90,14 @@ const Styles = StyleSheet.create({
         height: 50,
         borderRadius: 25,
     },
-
+    imagePlaceholder: {
+      width: 200,
+      height: 200,
+      paddingVertical: 90,
+      backgroundColor: 'rgba(0,0,0,.1)',
+      marginTop: 4,
+      textAlign: 'center'
+    }
 });
 
 export default Styles;
