@@ -21,7 +21,7 @@ export default function PantallaAcceso({ navigation }) {
 
                 
                 if(!esEmailValido(email))
-                    return Alert.alert("Registro", 'El email no es valido');
+                    return Alert.alert("Login", 'El email no es valido');
 
                 if(pass.length < 1)
                     return Alert.alert("Login", 'Ingresa una contraseña');
