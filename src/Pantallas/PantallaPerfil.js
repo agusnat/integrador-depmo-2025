@@ -3,20 +3,21 @@ import { View, Text, Pressable, TextInput, TouchableOpacity, Alert, ActivityIndi
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { useState, useEffect, useRef } from 'react';
-import Styles from '../assets/Styles';
+import Styles from '../styles/Styles';
 import * as SecureStore from 'expo-secure-store';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { File, Directory, Paths } from 'expo-file-system';
 
 export default function PantallaPerfil({ navigation}) {
     const [fotoUri, setFotoUri] = useState(null);
-    const [datos, setDatos] = useState(null);
+    const [datos, setDatos] = useState({ nombre: '', apellido: '' });
     const [showCamera, setShowCamera] = useState(false);
     const [permission, requestPermission] = useCameraPermissions();
     const cameraRef = useRef(null);
 
 
     useEffect(() => { 
+        // Carga inicial del perfil
         async function cargarDatos() {
             const uid = await SecureStore.getItemAsync('userToken');
             cargar(uid);
@@ -24,6 +25,7 @@ export default function PantallaPerfil({ navigation}) {
         cargarDatos();
     }, []);
 
+     // Lee el doc del usuario
     const cargar = async(uid)=> {
         const docSnap = await getDoc(doc(db, "usuarios", uid));
 
@@ -35,6 +37,7 @@ export default function PantallaPerfil({ navigation}) {
         }
     };
 
+    // Guarda cambios
     const guardar = async()=>{
         const uid = await SecureStore.getItemAsync('userToken');
 
@@ -48,6 +51,7 @@ export default function PantallaPerfil({ navigation}) {
         }
     };
 
+    // Toma foto y la copia a documentDirectory
     const tomarYGuardarFoto = async () => {
         if (!cameraRef.current) return;
 
@@ -75,13 +79,15 @@ export default function PantallaPerfil({ navigation}) {
         }
     };
 
+    // Loading inicial
     if (!datos) return (<>
         <View style={Styles.container}>
             <ActivityIndicator size="large" />
         </View>
     </>);
 
-    if (!permission?.granted) {
+    // La pantalla de permisos solo se muestra cuando se abre la cámara 
+    if (showCamera && !permission?.granted) {
         return (
             <View style={Styles.container}>
                 <Text style={Styles.text}>Necesitamos permisos de cámara</Text>
@@ -92,6 +98,7 @@ export default function PantallaPerfil({ navigation}) {
         );
     }
     
+    // Vista cámara
     if (showCamera) {
         return (
             <View style={Styles.contenedorCamara}>
@@ -114,6 +121,7 @@ export default function PantallaPerfil({ navigation}) {
         );
     }
 
+    // UI principal perfil
     return (
         <View style={Styles.container}>
             <Text style={Styles.title}>Mis datos</Text>
