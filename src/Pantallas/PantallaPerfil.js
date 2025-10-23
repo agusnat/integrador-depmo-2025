@@ -10,7 +10,7 @@ import { File, Directory, Paths } from 'expo-file-system';
 
 export default function PantallaPerfil({ navigation}) {
     const [fotoUri, setFotoUri] = useState(null);
-    const [datos, setDatos] = useState({ nombre: '', apellido: '' });
+    const [datos, setDatos] = useState(null);
     const [showCamera, setShowCamera] = useState(false);
     const [permission, requestPermission] = useCameraPermissions();
     const cameraRef = useRef(null);
@@ -27,13 +27,13 @@ export default function PantallaPerfil({ navigation}) {
 
      // Lee el doc del usuario
     const cargar = async(uid)=> {
-        const docSnap = await getDoc(doc(db, "usuarios", uid));
+        const snap = await getDoc(doc(db, 'usuarios', uid));
 
-        if (docSnap.exists()) {
-            const datos = docSnap.data();
-            setDatos(datos);
+        if (snap.exists()) {
+            setDatos(snap.data());
         } else {
-            console.log('No se encontró el documento');
+            // Si no existe, inicializamos estructura mínima
+            setDatos({ nombre: '', apellido: '' });
         }
     };
 
